@@ -6,7 +6,7 @@
 
   <title>{{ $blog_main['title'] }}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-  <link rel="shortcut icon" href="assets/img/favicon.png" type="image/x-icon">
+  <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png') }}" type="image/x-icon">
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet">
   <link rel="stylesheet" href={{ asset('styles.css') }}>
 
@@ -78,13 +78,13 @@
           <!-- Chapdagi katta karta -->
           <div class="col-md-8 mt-5 big__image">
             <div class="card">
-              @if ($blog_main->media_type == 'video')
-                <video class="card-img-top w-100" controls>
-                    <source src="{{ asset($blog_main->media) }}" type="video/mp4">
-                    Sizning brauzeringiz ushbu videoni qo‘llab-quvvatlamaydi. 
-                </video>
-              @elseif ($blog_main->media_type == 'image')
-                  <img src="{{ asset($blog_main->media) }}" class="card-img-top w-100" alt="Blog image">
+              @if (Str::startsWith($blog_main->media_type, 'video'))
+                  <video class="card-img-top w-100" controls>
+                      <source src="{{ Storage::url($blog_main->media_path) }}" alt="{{ $blog_main->title }}">
+                      Sizning brauzeringiz ushbu videoni qo‘llab-quvvatlamaydi.
+                  </video>
+              @elseif (Str::startsWith($blog_main->media_type, 'image'))
+                  <img src="{{ Storage::url($blog_main->media_path) }}" alt="{{ $blog_main->title }}" class="card-img-top w-100">
               @endif
               <div class="card-body">
                 <h5 class="card-title">{{ $blog_main->title }}</h5>
@@ -101,13 +101,13 @@
             <div class="d-flex flex-column gap-3">
                 @foreach ($blogs as $blog)
                     <div class="card">
-                        @if ($blog->media_type == 'video')
+                        @if (Str::startsWith($blog->media_type, 'video'))
                             <video class="card-img-top w-100" controls>
-                                <source src="{{ asset($blog->media) }}" type="video/mp4">
+                                <source src="{{ Storage::url($blog->media_path) }}" type="video/mp4">
                                 Sizning brauzeringiz ushbu videoni qo‘llab-quvvatlamaydi.
                             </video>
-                        @elseif ($blog->media_type == 'image')
-                            <img src="{{ asset($blog->media) }}" class="card-img-top w-100" alt="Blog image">
+                        @elseif (Str::startsWith($blog->media_type, 'image'))
+                          <img src="{{ Storage::url($blog->media_path) }}" alt="{{ $blog->title }}" class="card-img-top w-100">
                         @endif
         
                         <div class="card-body">
@@ -135,9 +135,9 @@
       </a>
 
       <!--=============== SCROLLREVEAL ===============-->
-      <script src="assets/js/scrollreveal.min.js"></script>
+      <script src="{{ asset('assets/js/scrollreveal.min.js') }}"></script>
 
       <!--=============== MAIN JS ===============-->
-      <script src="assets/js/main.js"></script>
+      <script src={{ asset('assets/js/main.js') }}></script>
 </body>
 </html>

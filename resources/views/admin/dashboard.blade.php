@@ -1,14 +1,28 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Travel Blog</title>
-  <style>
-    * { box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f4f4f4; }
 
-    h1 { text-align: center; }
+  <!--  -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <!--  -->
+  <style>
+    * { 
+      box-sizing: border-box; 
+    }
+    body { 
+      font-family: Arial, sans-serif; 
+      margin: 0; 
+      padding: 20px; 
+      background: black; }
+
+    h1 { 
+      text-align: center; 
+      color: white;
+    }
 
     .blog-container {
       display: grid;
@@ -79,7 +93,7 @@
       position: relative;
       display: inline-block;
       left: 100px;
-      top: -44px;
+      top: -55px;
     }
 
     .admin-panel {
@@ -101,19 +115,19 @@
       width: 100%;
       padding: 8px;
       margin: 8px 0;
-      border-radius: 5px;
+      border-radius: 10px;
       border: 1px solid #ccc;
-      font-size: 14px; 
+      font-size: 18px; 
     }
 
     .admin-panel button {
-      background: green;
-      color: white;
-      padding: 8px 12px;
-      border: none;
+      width: 100%;
+      color: black;
+      padding: 12px 12px;
+      border: 1px solid gray;
       border-radius: 5px;
       cursor: pointer;
-      font-size: 14px;  
+      font-size: 18px;  
     }
 
   </style>
@@ -130,67 +144,64 @@
     <input type="text" id="title" placeholder="Sarlavha kiriting">
     <textarea id="description" placeholder="Tavsif kiriting"></textarea>
     <input type="file" id="mediaUpload" accept="image/*,video/*">
-    <button onclick="addBlog()">Blogni qo‘shish</button>
+    <button class="btn btn-outline-dark" onclick="addBlog()">Blogni qo‘shish</button>
   </div>
 
   <script>
- 
     document.addEventListener('DOMContentLoaded', () => {
-      const savedBlogs = JSON.parse(localStorage.getItem('blogs')) || [];
-      savedBlogs.forEach(blog => {
-        addBlogToPage(blog);
-      });
+      fetch('/admin/blogs')
+        .then(res => res.json())
+        .then(data => {
+          data.forEach(blog => addBlogToPage(blog));
+        });
     });
-
-    
+  
     function addBlog() {
+      console.log("Blog qo'shish boshlandi");
       const title = document.getElementById("title").value;
       const description = document.getElementById("description").value;
       const mediaInput = document.getElementById("mediaUpload");
-      const blogContainer = document.getElementById("blogContainer");
-
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  
       if (!title || !description || !mediaInput.files[0]) {
         alert("Iltimos, barcha maydonlarni to‘ldiring.");
         return;
       }
-
-      const file = mediaInput.files[0];
-      const fileType = file.type;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const newBlog = {
-          title: title,
-          description: description,
-          media: e.target.result,
-          fileType: fileType
-        };
-
-        // Blogni sahifaga qo'shish va localStorage ga saqlash
-        addBlogToPage(newBlog);
-        saveBlogToLocalStorage(newBlog);
-
-        // Formani tozalash
+  
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("description", description);
+      formData.append("media", mediaInput.files[0]);
+  
+      fetch('/admin/blogs', {
+        method: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': csrfToken
+        },
+        body: formData
+      })
+      .then(res => res.json())
+      .then(blog => {
+        addBlogToPage(blog);
         document.getElementById("title").value = '';
         document.getElementById("description").value = '';
         document.getElementById("mediaUpload").value = '';
-      };
-      reader.readAsDataURL(file);
+      });
     }
-
-    // Blogni sahifaga qo'shish
+  
     function addBlogToPage(blog) {
       const blogContainer = document.getElementById("blogContainer");
       const newCard = document.createElement("div");
       newCard.className = "blog-card";
-
+  
       let mediaElement = "";
-      if (blog.fileType.startsWith("image/")) {
-        mediaElement = `<img src="${blog.media}" alt="${blog.title}" />`;
-      } else if (blog.fileType.startsWith("video/")) {
-        mediaElement = `<video src="${blog.media}" controls></video>`;
+      const mediaUrl = `/storage/${blog.media_path}`;
+      if (blog.media_type.startsWith("image/")) {
+        mediaElement = `<img src="${mediaUrl}" alt="${blog.title}" />`;
+      } else if (blog.media_type.startsWith("video/")) {
+        mediaElement = `<video src="${mediaUrl}" controls></video>`;
       }
-
+  
       newCard.innerHTML = `
         ${mediaElement}
         <div class="blog-content">
@@ -198,29 +209,26 @@
           <p>${blog.description}</p>
           <button>Batafsil</button>
         </div>
-        <button class="delete-btn" onclick="deleteBlog(this)">O'chirish</button>
+        <button class="delete-btn" onclick="deleteBlog(${blog.id}, this)">O'chirish</button>
       `;
       blogContainer.prepend(newCard);
     }
-
-    // Blogni localStorage ga saqlash
-    function saveBlogToLocalStorage(blog) {
-      const savedBlogs = JSON.parse(localStorage.getItem('blogs')) || [];
-      savedBlogs.push(blog);
-      localStorage.setItem('blogs', JSON.stringify(savedBlogs));
-    }
-
-    // Blogni o'chirish
-    function deleteBlog(button) {
-      const blogCard = button.closest(".blog-card");
-      const blogTitle = blogCard.querySelector("h3").textContent;
-
-      // LocalStorage dan o'chirish
-      let savedBlogs = JSON.parse(localStorage.getItem('blogs'));
-      savedBlogs = savedBlogs.filter(blog => blog.title !== blogTitle);
-      localStorage.setItem('blogs', JSON.stringify(savedBlogs));
-
-      blogCard.remove();
+  
+    function deleteBlog(id, button) {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  
+      fetch(`/admin/blogs/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'X-CSRF-TOKEN': csrfToken,
+          'Accept': 'application/json'
+        }
+      })
+      .then(res => {
+        if (res.ok) {
+          button.closest('.blog-card').remove();
+        }
+      });
     }
   </script>
 

@@ -1,44 +1,43 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\Blog;
 use Illuminate\Http\Request;
+use App\Models\Blog;
+use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
-    // Bloglarni olish
     public function index()
     {
-        return Blog::all();  // Yoki paginatsiya qo'shish mumkin
+        return response()->json(Blog::latest()->get());
     }
 
-    // Yangi blog qo'shish
     public function store(Request $request)
     {
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'media' => 'required|file|mimes:jpeg,png,jpg,gif,mp4|max:10240', // 10MB
+            'media' => 'required|file|mimes:jpeg,png,jpg,gif,mp4,avi,webm,mov|max:51200'
         ]);
 
-        $mediaPath = $request->file('media')->store('blogs', 'public');
+        $path = $request->file('media')->store('blogs', 'public');
 
         $blog = Blog::create([
             'title' => $request->title,
             'description' => $request->description,
-            'media' => $mediaPath,
+            'media_path' => $path,
+            'media_type' => $request->file('media')->getMimeType(),
         ]);
 
-        return response()->json($blog, 201); // Yangi blogni qaytarish
+        return response()->json($blog, 201);
     }
 
-    // Blog o'chirish
     public function destroy($id)
     {
         $blog = Blog::findOrFail($id);
+        Storage::disk('public')->delete($blog->media_path);
         $blog->delete();
 
-        return response()->json(null, 204);  // O'chirishni tasdiqlash
+        return response()->json(['message' => 'Deleted']);
     }
 }

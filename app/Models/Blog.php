@@ -10,10 +10,7 @@ class Blog extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title',
-        'description',
-        'file_path',
-        'file_type'
+        'title', 'description', 'media_path', 'media_type',
     ];
 
     public static function lastBlog()

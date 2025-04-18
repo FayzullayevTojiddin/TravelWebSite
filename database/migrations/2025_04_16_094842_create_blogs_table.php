@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
-            $table->string('media');
+            $table->string('media_path');
             $table->string('media_type');
             $table->timestamps();
         });
