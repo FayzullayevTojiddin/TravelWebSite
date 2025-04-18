@@ -18,46 +18,56 @@
       height: 200px;
       object-fit: cover;
     }
+    .links::after{
+      content: '';
+      width: 70%;
+      height: 2px;
+      background-color: var(--title-color);
+      position: absolute;
+      left: 0;
+      transition: .4s;
+      bottom: -0.5rem;
+    }
   </style>
 
 </head>
 <body>
-    <header class="header" id="header">
-        <nav class="nav contaienr">
-           <a href="#" class="nav__logo">Travel</a>
+  <header class="header" id="header">
+      <nav class="nav contaienr">
+        <a href="{{ route('index') }}" class="nav__logo">Travel</a>
 
-           <div class="nav__menu" id="nav-menu">
-              <ul class="nav__list">
-                 <li class="nav__item">
-                    <a href={{ route('index') }} class="nav__link active-link">Home</a>
-                 </li>
+        <div class="nav__menu" id="nav-menu">
+            <ul class="nav__list">
+              <li class="nav__item">
+                  <a href="{{ route('index') }}" class="nav__link">Home</a>
+              </li>
 
-                 <li class="nav__item">
-                    <a href="#about" class="nav__link">About</a>
-                 </li>
+              <li class="nav__item">
+                  <a href="{{ route('index') }}#about" class="nav__link">About</a>
+              </li>
 
-                 <li class="nav__item">
-                    <a href="#popular" class="nav__link">Popular</a>
-                 </li>
+              <li class="nav__item">
+                  <a href="{{ route('index') }}#popular" class="nav__link">Popular</a>
+              </li>
 
-                 <li class="nav__item">
-                    <a href="#explore" class="nav__link">Explore</a>
-                 </li>
+              <li class="nav__item">
+                  <a href="{{ route('index') }}#explore" class="nav__link">Explore</a>
+              </li>
 
-                 <li class="nav__item">
-                    <a href={{ route('blogs') }} class="nav__link">Blog</a>
-                 </li>
-              </ul>
+              <li class="nav__item">
+                  <a href="#" class="nav__link links">Blog</a>
+              </li>
+            </ul>
 
-              <div class="nav__close" id="nav-close">
-                 <i class="ri-close-line"></i>
-              </div>
-           </div>
-           <div class="nav__toggle" id="nav-toggle">
-              <i class="ri-menu-line"></i>
-           </div>
-        </nav>
-    </header>
+            <div class="nav__close" id="nav-close">
+              <i class="ri-close-line"></i>
+            </div>
+        </div>
+        <div class="nav__toggle" id="nav-toggle">
+            <i class="ri-menu-line"></i>
+        </div>
+      </nav>
+  </header>
     <!--=============== HEADER ===============-->
 
     <!--=============== SECTION ===============-->

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,3 +19,5 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/admin/blogs', [BlogController::class, 'store'])->name('admin.blog.store');
     Route::delete('/admin/blogs/{id}', [BlogController::class, 'destroy'])->name('admin.blog.destroy');
 });
+
+Route::post('/send-contact', [ContactController::class, 'send']);
