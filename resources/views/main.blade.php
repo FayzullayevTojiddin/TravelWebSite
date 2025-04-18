@@ -219,11 +219,6 @@
                            Orollar va boshqa jannatmakon joylarni o‘rganish — bu dunyo bo‘ylab sayohatning eng unutilmas va hayratlanarli qismlaridan biridir.
                         </p>  
                      </div>
-   
-                     <div class="explore__user">
-                        <img src="assets/img/explore-perfil.png" alt="" class="explore__perfil">
-                        <span class="explore__name">Ziyodullo Ko't</span>
-                     </div>
                   </div>
                </div>
             </section>
